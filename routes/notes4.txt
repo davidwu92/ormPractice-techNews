@@ -1,0 +1,12 @@
+Part 4:
+
+1. db created.
+2. connection established using sequelize; variables hidden from public using .env file and dotenv package.
+3. first model, "user", created. Has four columns: id, username, email, password.
+
+Let's write routes that work with User model to perform CRUD.
+These are going into routes/api/user-routes.js
+
+index.js files will package up our route files and prefix their URLs appropriately.
+
+Routes in the api folder will manage our db's table CRUD operations.

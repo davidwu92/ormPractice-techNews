@@ -1,0 +1,4 @@
+Part 5
+Routes have been written to perform CRUD on our user models.
+
+Now we set up the server.

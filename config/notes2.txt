@@ -16,7 +16,13 @@ This code is the initial setup for connection.js:
 
     module.exports = sequelize;
 
-Problem is, it'll show our username and password if pushed to github.
-So we install dotenv, and use a .env to store stuff for us that won't be pushed!
+Problem is, it'll show our username and password if pushed to github. So we...
 
-Make our .env file, store our passwords and such, put it in our gitignore!
+  1. install dotenv
+
+  2. Make our .env file, store our passwords and such
+
+  3. add .env to our gitignore file, so they don't get pushed up.
+
+  4. make variables available for use in connection.js: " require('dotenv').config(); "
+     access variables with " process.env.<varname> "
