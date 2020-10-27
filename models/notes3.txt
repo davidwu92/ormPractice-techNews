@@ -1,3 +1,16 @@
-Remember: a CLASS is 
+Remember: a CLASS is a template for creating objects. They'll look like this:
+    
+    class ClassName {
+        constructor() { ... }
+        method_1() { ... }
+        method_2() { ... }
+      }
+    }
 
-Sequelize's MODEL classes let us use JavaScript classes
+Sequelize's model classes let us use JavaScript classes to define columns/data types for our tables.
+
+This class will serve as a layer between the API and the database and will handle all transactions of data between the two.
+
+We created a User model, which sets up the user table's columns and config.
+
+We created index.js to organize models, exporting them as properties on an object.
