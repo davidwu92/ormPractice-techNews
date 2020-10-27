@@ -63,8 +63,9 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
   //expecting {username: 'johndoe92', email: 'johndoe@gmail.com', password: 'lalala'}
 
-  //User.update() expects two argumentss: 1. new values and 2. object w/ where property.
+  //User.update() expects two argumentss: 1. new values and 2. options object w/ where property.
   User.update(req.body, {
+    individualHooks: true, //we put this in for bcrypt to work.
     where: {
       id: req.params.id
     }

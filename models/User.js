@@ -3,6 +3,8 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
 
+const bcrypt = require('bcrypt'); //bcrypt lets us hash passwords before storing in db
+
 // create our User model
 class User extends Model {}
 
@@ -42,6 +44,20 @@ const columns = {
 
 const tableConfig = {
   // TABLE CONFIGURATION OPTIONS GO HERE (https://sequelize.org/v5/manual/models-definition.html#configuration))
+  
+  /* HOOKS, AKA lifecycle events, are Sequelize functions that are called before or after Sequelize calls.
+     We'll put them into this config object.  */
+  hooks:{
+    async beforeCreate(newUserData){ //runs before creating new user; hashes their password.
+      newUserData.password = await bcrypt.hash(newUserData.password, 10);
+      return newUserData;
+    },
+      
+    async beforeUpdate(updatedUserData) {
+      updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+      return updatedUserData;
+    }
+  },
 
   // pass in our imported sequelize connection (the direct connection to our database)
   sequelize,
