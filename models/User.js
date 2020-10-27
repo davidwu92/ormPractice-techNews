@@ -5,8 +5,13 @@ const sequelize = require('../config/connection');
 
 const bcrypt = require('bcrypt'); //bcrypt lets us hash passwords before storing in db
 
-// create our User model
-class User extends Model {}
+// create our User model. It needs an INSTANCE METHOD for password auth.
+class User extends Model {
+    // set up method to run on instance data (per user) to check password
+    checkPassword(loginPw) {
+      return bcrypt.compareSync(loginPw, this.password);
+    }
+}
 
 //Keeping it clean: columns and tableConfig are the objects we'll pass to User.init() to create a table in our 'just_tech_news_db'. The table (and model) is called "user".
 

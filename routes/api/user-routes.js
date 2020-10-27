@@ -1,9 +1,9 @@
 const router = require('express').Router();
-// These endpoints for the server are going to be accessible at the /api/users URL.
-// When we create posts and comments later...
-// we'll make those endpoints accessible at /api/posts and /api/comments. Easy.
-const { User } = require('../../models');
+    // These endpoints for the server are going to be accessible at the /api/users URL.
+    // When we create posts and comments later, we'll make those
+    // endpoints accessible at /api/posts and /api/comments. Easy.
 
+const { User } = require('../../models');
 
 // GET ROUTES' model methods: https://sequelize.org/master/manual/model-querying-finders.html
 
@@ -22,6 +22,7 @@ router.get('/', (req, res) => {
       res.status(500).json(e) //internal server error; can't grab users in db.
     })
 });
+
 
 // GET /api/users/1 (one user)
 router.get('/:id', (req, res) => {
@@ -44,6 +45,7 @@ router.get('/:id', (req, res) => {
     })
 });
 
+
 // POST /api/users (create a new user)
 router.post('/', (req, res) => {
   //expecting {username: 'johndoe92', email: 'johndoe@gmail.com', password: 'lalala'}
@@ -58,6 +60,30 @@ router.post('/', (req, res) => {
       res.status(500).json(e)
     })  
 });
+
+
+// POST /api/users/login (log an existing user in w/ email+password)
+router.post('/login', (req,res)=>{
+  //expecting req.body {email: 'davidwu92@gmail.com', password: 'password123'}
+  User.findOne({
+    where: {email: req.body.email}
+  }).then(dbUserData=>{
+    if(!dbUserData){
+      res.send(404).json({message: 'Could not find an existing user with the provided email address.'})
+      return;
+    }
+    
+    //User models now have checkPassword method that expects the plaintext pw.
+    const validPassword = dbUserData.checkPassword(req.body.password) 
+    if(!validPassword){
+      res.status(400).json({message: 'Incorrect password.'})
+      return;
+    }
+    
+    res.json({user: dbUserData, message: `You've successfully logged in. Welcome, ${dbUserData.username}`})
+  })
+})
+
 
 // PUT /api/users/1 (edit one user)
 router.put('/:id', (req, res) => {
@@ -84,6 +110,7 @@ router.put('/:id', (req, res) => {
     });
 });
 
+
 // DELETE /api/users/1 (delete one user)
 router.delete('/:id', (req, res) => {
   User.destroy({where: {id: req.params.id}})
@@ -99,6 +126,7 @@ router.delete('/:id', (req, res) => {
       res.status(500).json(e);
     });
 });
+
 
 module.exports = router;
 
