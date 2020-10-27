@@ -1,0 +1,9 @@
+1. Created schema for a table: just_tech_news_db
+
+2. used mysql in command prompt: mysql -u root -p
+
+3. in mysql, used command: "source db/schema.sql" to create our table.
+
+4. in mysql, "show databases;" will show us all the databases!
+
+5. "quit" will quit mysql.

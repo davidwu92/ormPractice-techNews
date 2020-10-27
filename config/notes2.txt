@@ -1,0 +1,22 @@
+After naming/designing our database in schema.sql and mysql...
+
+connection.js uses Sequelize to set up our app to connect to our db.
+
+This code is the initial setup for connection.js:
+
+    // import the Sequelize constructor from the library
+    const Sequelize = require('sequelize');
+
+    // create connection to our database, pass in your MySQL information for username and password
+    const sequelize = new Sequelize('just_tech_news_db', 'username', 'password', {
+      host: 'localhost',
+      dialect: 'mysql',
+      port: 3306
+    });
+
+    module.exports = sequelize;
+
+Problem is, it'll show our username and password if pushed to github.
+So we install dotenv, and use a .env to store stuff for us that won't be pushed!
+
+Make our .env file, store our passwords and such, put it in our gitignore!
