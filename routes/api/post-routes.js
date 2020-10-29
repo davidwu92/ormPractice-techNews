@@ -1,8 +1,11 @@
 const router = require('express').Router();
 
-const {Post, User} = require('../../models');
+const {Post, User, Vote} = require('../../models');
 
-//GET /api/posts       GRAB ALL POSTS
+const sequelize = require('../../config/connection'); //to receive updated info on posts (when voting)
+
+
+//GET /api/posts          GRAB ALL POSTS
 router.get('/', (req, res)=>{
   console.log('~~~~~~~~~~~~~~ GETTING POSTS ~~~~~~~~~~~~~~')
   Post.findAll({
@@ -22,8 +25,7 @@ router.get('/', (req, res)=>{
     })
 })
 
-
-//GET /api/posts/:id   GRAB ONE POST BY ITS ID
+//GET /api/posts/:id      GRAB ONE POST BY ITS ID
 router.get('/:id', (req, res)=>{
   Post.findOne({
     where: {id: req.params.id},
@@ -48,8 +50,7 @@ router.get('/:id', (req, res)=>{
     })
 })
 
-
-//POST /api/posts      CREATE A POST
+//POST /api/posts         CREATE A POST
 router.post('/', (req, res)=>{
   // expects {title: 'Taskmaster goes public!', post_url: 'https://taskmaster.com/press', user_id: 1}
   Post.create({
@@ -64,8 +65,36 @@ router.post('/', (req, res)=>{
     })
 })
 
+//PUT /api/posts/upvote   UPVOTE A POST
+router.put('/upvote', (req, res)=>{ //this route must be written before put('/:id').
+  Vote.create({ //create a new vote.
+    user_id: req.body.user_id,
+    post_id: req.body.post_id
+  })
+    .then(()=>{
+      // then find the post we just voted on
+      return Post.findOne({
+        where: {
+          id: req.body.post_id
+        },
+        attributes: [
+          'id',
+          'post_url',
+          'title',
+          'created_at',
+          // use raw MySQL aggregate function query to get a count of how many votes the post has and return it under the name `vote_count`
+          [
+            sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'),
+            'vote_count'
+          ]
+        ]
+      })
+      .then(dbPostData => res.json(dbPostData))
+      .catch(err => res.json(err));
+    })
+})
 
-//PUT /api/posts/:id   EDIT ONE POST'S TITLE
+//PUT /api/posts/:id      EDIT ONE POST'S TITLE
 router.put('/:id', (req, res)=>{
   Post.update(
     {title: req.body.title}, //new value(s) here.
@@ -84,8 +113,7 @@ router.put('/:id', (req, res)=>{
     })
 })
 
-
-//DELETE /api/posts/:id DELETE ONE POST
+//DELETE /api/posts/:id   DELETE ONE POST
 router.delete('/:id', (req, res)=>{
   Post.destroy({
     where: {id: req.params.id}
@@ -102,5 +130,8 @@ router.delete('/:id', (req, res)=>{
       res.status(500).json(err)
     })
 })
+
+
+
 
 module.exports = router

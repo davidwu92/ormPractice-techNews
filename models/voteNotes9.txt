@@ -1,0 +1,13 @@
+PART 9: VOTES AND THEIR ROUTES
+
+Each vote has three columns: id, user_id, and post_id
+
+When a user votes on a post, we'll get a new row on this table.
+
+
+In models/index.js, we set up the many to many relationship.
+  ~Each User belongsToMany Posts, and vice versa. This is through their votes.
+  ~Each Vote belongsTo a User and belongsTo a Post.
+  ~Each User and each Post hasMany Votes
+
+In the routes, we set up voting routes INSIDE THE POST ROUTES (each vote is on a post!)
