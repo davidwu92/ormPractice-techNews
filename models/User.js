@@ -15,7 +15,7 @@ class User extends Model {
 
 //Keeping it clean: columns and tableConfig are the objects we'll pass to User.init() to create a table in our 'just_tech_news_db'. The table (and model) is called "user".
 
-const columns = {
+const userSchema = {
   id:{
     // use the special Sequelize DataTypes object provide what type of data it is
     type: DataTypes.INTEGER,
@@ -77,6 +77,6 @@ const tableConfig = {
 }
 
 //User.init takes two objects: first one defines columns, second defines table config.
-User.init(columns, tableConfig);
+User.init(userSchema, tableConfig);
 
 module.exports = User;
