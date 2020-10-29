@@ -1,0 +1,26 @@
+Part 8: ROUTES FOR POSTS
+
+post-routes.js requires both Post and User models.
+
+In a query to the post table, we want info about the post AND the user that posted it.
+Using foreign key "user_id" in Post.js, we formed a JOIN: essential characteristic of the relational data model.
+
+
+In our post routes, we'll pass a similar options object as in the user routes...
+
+  User.findOne({
+    where: {id: req.params.id},  //find one user where id matches req.params.id
+    attributes: { exclude: ['password'] } //grab these attributes from db to serve up (all but password!)
+  }) 
+
+  Post.findOne({
+    where: {id: req.params.id},
+    attributes: ['id', 'post_url', 'title', 'created_at'],
+    include: [  //this include property sets up the JOIN. Array because we could need more tables' data.
+      {
+        model: User,
+        attributes: ['username']
+      }
+    ]
+  })
+

@@ -33,7 +33,7 @@ const postSchema = {
 const tableConfig = {
   sequelize,
   freezeTableName: true,
-  underscored: true,
+  underscored: true, //this made all our column titles have underscores: created_at
   modelName: 'post'
 }
 
