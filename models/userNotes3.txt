@@ -1,3 +1,5 @@
+PART 3: THE USER MODEL (before bcrypt pw auth)
+
 Remember: a CLASS is a template for creating objects. They'll look like this:
     
     class ClassName {
