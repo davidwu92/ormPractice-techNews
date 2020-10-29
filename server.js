@@ -20,7 +20,7 @@ app.use(routes);
   {force: false} says "don't drop and re-create all my db tables on startup."
   We'll set it to true if we ever need to make changes to our sequelize models.
 */
-sequelize.sync({ force: false })
+sequelize.sync({ force: true })
   .then(() => {
     app.listen(PORT, () => console.log(`Now listening on port ${PORT}.`));
   });

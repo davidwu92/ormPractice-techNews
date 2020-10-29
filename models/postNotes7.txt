@@ -1,24 +1,9 @@
 We created the Post models. Users can post with a title and URL (to a news article).
 
+~~~ASSOCIATIONS BETWEEN TABLES~~~
+
 Posts have user_id, which references the "user" model at key "id":
 
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    post_url: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isURL: true
-      }
-    },
     user_id: {
       type: DataTypes.INTEGER,
       references: {
@@ -27,3 +12,11 @@ Posts have user_id, which references the "user" model at key "id":
       }
     }
 
+User to Post: one to many relationship.
+Create associations between tables in index.js:
+    User.hasMany(Post, {foreignKey: 'user_id'}),
+    Post.belongsTo(User, {foreignKey: 'user_id'})
+
+
+Making these associations requires we drop and recreate our tables.
+Do this by changing force: true in server.js and restarting the server.
