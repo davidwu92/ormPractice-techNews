@@ -9,7 +9,10 @@ const sequelize = require('../../config/connection'); //to receive updated info 
 router.get('/', (req, res)=>{
   console.log('~~~~~~~~~~~~~~ GETTING POSTS ~~~~~~~~~~~~~~')
   Post.findAll({
-    attributes: ['id', 'post_url', 'title', 'created_at'], //this determines what post attributes to grab.
+    attributes: ['id', 'post_url', 'title', 'created_at', 
+      [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+      //this grabs the VOTES on each post as well.
+    ], //this determines what post attributes to grab.
     order: [['created_at', 'DESC']], //this orders the array of posts. USE A NESTED ARRAY.
     include: [ //this include property sets up the JOIN.
         {
@@ -29,7 +32,9 @@ router.get('/', (req, res)=>{
 router.get('/:id', (req, res)=>{
   Post.findOne({
     where: {id: req.params.id},
-    attributes: ['id', 'post_url', 'title', 'created_at'],
+    attributes: ['id', 'post_url', 'title', 'created_at',
+      [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+    ],
     include: [
       {
         model: User,
@@ -67,31 +72,13 @@ router.post('/', (req, res)=>{
 
 //PUT /api/posts/upvote   UPVOTE A POST
 router.put('/upvote', (req, res)=>{ //this route must be written before put('/:id').
-  Vote.create({ //create a new vote.
-    user_id: req.body.user_id,
-    post_id: req.body.post_id
-  })
-    .then(()=>{
-      // then find the post we just voted on
-      return Post.findOne({
-        where: {
-          id: req.body.post_id
-        },
-        attributes: [
-          'id',
-          'post_url',
-          'title',
-          'created_at',
-          // use raw MySQL aggregate function query to get a count of how many votes the post has and return it under the name `vote_count`
-          [
-            sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'),
-            'vote_count'
-          ]
-        ]
-      })
-      .then(dbPostData => res.json(dbPostData))
-      .catch(err => res.json(err));
-    })
+  // custom static method created in models/Post.js.
+  Post.upvote(req.body, { Vote })
+    .then(updatedPostData => res.json(updatedPostData))
+    .catch(err => {
+      console.log(err);
+      res.status(400).json(err);
+    });
 })
 
 //PUT /api/posts/:id      EDIT ONE POST'S TITLE

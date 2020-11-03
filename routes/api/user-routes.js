@@ -3,7 +3,7 @@ const router = require('express').Router();
     // When we create posts and comments later, we'll make those
     // endpoints accessible at /api/posts and /api/comments. Easy.
 
-const { User } = require('../../models');
+    const { User, Post, Vote } = require("../../models");
 
 // GET ROUTES' model methods: https://sequelize.org/master/manual/model-querying-finders.html
 
@@ -30,7 +30,21 @@ router.get('/:id', (req, res) => {
   //Pass it an object with "where" key, set to object of "filters". Right now we're grabbing user by id.
   User.findOne({
     where: {id: req.params.id},
-    attributes: { exclude: ['password'] }
+    attributes: { 
+      exclude: ['password'],
+      include: [
+        {
+          model: Post,
+          attributes: ['id', 'title', 'post_url', 'created_at']
+        },
+        {
+          model: Post,
+          attributes: ['title'],
+          through: Vote,
+          as: 'voted_posts'
+        }
+      ]
+    }
   }) 
     .then(user=>{
       if(!user){

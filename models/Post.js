@@ -1,7 +1,35 @@
 const {Model, DataTypes} = require('sequelize')
 const sequelize = require('../config/connection')
 
-class Post extends Model {}
+class Post extends Model {
+  /*
+    static means this method is one based on the Post model.
+    Not an INSTANCE method (like the User model). We can execute Post.upvote().
+    This method is expecting req.body as "body" and an object of the models as "models".
+  */
+  static upvote(body, models) {
+    return models.Vote.create({
+      user_id: body.user_id,
+      post_id: body.post_id
+    }).then(() => {
+      return Post.findOne({
+        where: {
+          id: body.post_id
+        },
+        attributes: [
+          'id',
+          'post_url',
+          'title',
+          'created_at',
+          [
+            sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'),
+            'vote_count'
+          ]
+        ]
+      });
+    });
+  }
+}
 
 const postSchema = {
   id: {
