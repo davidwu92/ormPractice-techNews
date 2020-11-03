@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const {Post, User, Vote} = require('../../models');
+const {Post, User, Vote, Comment} = require('../../models');
 
 const sequelize = require('../../config/connection'); //to receive updated info on posts (when voting)
 
@@ -15,11 +15,19 @@ router.get('/', (req, res)=>{
     ], //this determines what post attributes to grab.
     order: [['created_at', 'DESC']], //this orders the array of posts. USE A NESTED ARRAY.
     include: [ //this include property sets up the JOIN.
-        {
+      {
+        model: Comment,
+        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+        include: {
           model: User,
           attributes: ['username']
         }
-      ]
+      },
+      {
+        model: User,
+        attributes: ['username']
+      }
+    ]
   })
     .then(postData=> res.json(postData))
     .catch(e=>{
@@ -36,6 +44,14 @@ router.get('/:id', (req, res)=>{
       [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
     ],
     include: [
+      {
+        model: Comment,
+        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+        include: {
+          model: User,
+          attributes: ['username']
+        }
+      },
       {
         model: User,
         attributes: ['username']
